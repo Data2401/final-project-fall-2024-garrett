@@ -1,0 +1,50 @@
+---
+title: "Garrett's Final"
+author: "Garrett Weems"
+date: "2024-04-23"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Mediterranean Diet 
+Garrett Weems
+2024
+
+## Introduction
+A trip to the grocery store may be a worthwhile experience; you are preparing to do something that will save you money and provide nutrition for you and your loved ones. You consider healthy eating but are confused by the absurd amount of recommendations you have heard through the media. "The basic principles of good diets are so simple that I can summarize them in just ten words: eat less, move more, eat lots of fruits and vegetables." It seems that the Mediterranean diet fits the bill. 
+
+### My Approach
+Is there any correlation between certain foods eaten and heart health? First, determine the eating patterns of people who follow the Mediterranean diet, especially looking at foods of high interest when regarding health such as flavanoid rich foods and vegetables.   
+
+## Data
+
+In 2020, researchers Amato et. al investigated the eating patterns of people who had heart problems and compared them with those without. The data includes how often these participants (mostly men) ate foods such as canned fish, specific fruits and vegetables, simple pastas, etc. 
+
+```{r, echo = FALSE, warning= FALSE, message = FALSE, results= 'hide'}
+library("dplyr")#needed so I can mutate with foods consumed with a total fruits and vegetables amount. 
+library("tidyr")#since each observation is a row
+library("ggplot2")#useful for my plotting of the data 
+library("readxl")#needed to read the excel files 
+suppressWarnings({ 
+}) 
+```
+
+## What is the BMI for the Participants? 
+The mean BMI for these older men from Italy is 'r mean_bmi'
+
+```{r, echo = FALSE, warning= FALSE}
+#create my own copies of the dataset
+clinical_data <- read_xlsx("clinical_data.xlsx")
+ffq_data <- read_xls("FFQ_food_frequencies.xls")
+grams_data <- read_xls("food_grams.xls")
+
+#look at the clinical data to determine health of the participants
+bmi_col <- clinical_data[,"BMI" ]
+mean_bmi <- sapply(bmi_col, mean, na.rm = TRUE)
+
+```
+
+## How Much Pasta did these People Eat?
