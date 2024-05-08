@@ -28,14 +28,14 @@ library("dplyr")#needed so I can mutate with foods consumed with a total fruits 
 library("tidyr")#since each observation is a row
 library("ggplot2")#useful for my plotting of the data 
 library("readxl")#needed to read the excel files 
+library("vctrs")
 suppressWarnings({ 
 }) 
 ```
 
 ## What is the BMI for the Participants? 
-The mean BMI for these older men from Italy is 'r mean_bmi'
 
-```{r, echo = FALSE, warning= FALSE}
+```{r, echo = FALSE, warning= FALSE, results='hide', include=FALSE}
 #create my own copies of the dataset
 clinical_data <- read_xlsx("clinical_data.xlsx")
 ffq_data <- read_xls("FFQ_food_frequencies.xls")
@@ -43,8 +43,41 @@ grams_data <- read_xls("food_grams.xls")
 
 #look at the clinical data to determine health of the participants
 bmi_col <- clinical_data[,"BMI" ]
+summary(bmi_col)
 mean_bmi <- sapply(bmi_col, mean, na.rm = TRUE)
+rounded_mean_bmi <- signif(mean_bmi, 3)
+
 
 ```
 
-## How Much Pasta did these People Eat?
+The mean BMI for these older men from Italy is `r rounded_mean_bmi`, which is, if anything, slightly overweright yet normal according to standards according to statistics published on statista [here](https://www.statista.com/statistics/727866/distribution-of-body-mass-index-by-age-italy/) but be quick since you are here for MY data and graphs! 
+
+
+
+
+## The Plot Thickens 
+```{r,include=FALSE}
+#Do a graph of the BMI by age group 
+#Create age groups and see if that is similar to the statista data - does BMI steaily increase with age? 
+#create age groups by grabbing the rows of data that have people aged x-y, y-z, z-a, etc.
+age_col <- clinical_data[, "Age"]
+min_age <- sapply(age_col, min, na.rm = TRUE) %>%  signif(2)
+max_age <- sapply(age_col, max, na.rm = TRUE) %>%  signif(2)
+
+med_age <- sapply(age_col, median, na.rm = TRUE)  %>%  signif(2)
+colnames(clinical_data)
+
+#simply do by what deca(de) of life they are in
+thirty_bmi <- unlist(clinical_data %>%  filter(Age %>%  between(30,39)) %>% select(BMI, Age))
+forty_bmi <- unlist(clinical_data %>%  filter(Age %>%  between(40,49)) %>% select(BMI, Age))
+fifty_bmi <- unlist(clinical_data %>% filter(Age %>%  between(50,59)) %>% select(BMI, Age))
+sixty_bmi <- unlist(clinical_data %>%  filter(Age %>%  between(60,69)) %>% select(BMI, Age))
+seventy_bmi <- unlist(clinical_data %>% filter(Age %>%  between(70,79)) %>% select(BMI, Age))
+class(thirty_bmi)
+#now data is in multiple tibbles. Next I need to get them all in one tall dataframe in order to plot them groupby
+combined_data <- bind_rows(thirty_bmi, forty_bmi, fifty_bmi, sixty_bmi, seventy_bmi)
+
+```
+That is interesting because we are told that the Mediterranean diet leads to great health. Is BMI not that much of a factor in how long you live then? Men being tested are anywhere from `r min_age` to `r max_age` years old. Let's continue to get a graph of how different age groups' BMI varies. 
+
+
